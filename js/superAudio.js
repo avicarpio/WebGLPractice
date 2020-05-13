@@ -73,6 +73,7 @@ function createSphere(pos){
 
   var sphereGeometry = new THREE.SphereGeometry(5, 30, 30);
   var sphereMesh = new THREE.Mesh(sphereGeometry);
+  sphereMesh.material.color.setHex( 0xff1100 );
   sphereMesh.name = 'point';
   sphereArray.push(sphereMesh);
   scene.add(sphereMesh);
@@ -278,6 +279,9 @@ function render(){
     if(positionPlayer > -1){
       scene.getObjectByName('player').position.x -= 20;
       positionPlayer--;
+    }else{
+      scene.getObjectByName('player').position.x = 20;
+      positionPlayer = 1;
     }    
     moveLeft = false;
   }
@@ -286,6 +290,9 @@ function render(){
     if(positionPlayer < 1){
       scene.getObjectByName('player').position.x += 20;
       positionPlayer++;
+    }else{
+      scene.getObjectByName('player').position.x = -20;
+      positionPlayer = -1;
     }
     moveRight = false;
   }
