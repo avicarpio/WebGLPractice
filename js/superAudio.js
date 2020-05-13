@@ -249,11 +249,21 @@ function render(){
     sphereArray[i].position.z += 10;
     if(sphereArray[i].position.z > 65 && sphereArray[i].position.z < 80 && scene.getObjectByName('player').position.x == sphereArray[i].position.x){
       score += 100;
+      if(sphereArray.length == 1){
+        var spawnPos = Math.floor(Math.random() * (1 - (-1)+ 1)) + -1;
+        createSphere(spawnPos);
+        counter = 0;
+      }
       sphereArray.splice(i,1);
     }
 
     if(sphereArray[i].position.z > 100){
       score -= 400;
+      if(sphereArray.length == 1){
+        var spawnPos = Math.floor(Math.random() * (1 - (-1)+ 1)) + -1;
+        createSphere(spawnPos);
+        counter = 0;
+      }
       sphereArray.splice(i,1);
     }
   }
