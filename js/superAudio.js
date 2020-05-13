@@ -245,8 +245,9 @@ function render(){
     counter = 0;
   }
 
+  sphereArray[i].position.z += 10;
+
   for (var i = 0; i < sphereArray.length; i++){
-    sphereArray[i].position.z += 10;
     if(sphereArray[i].position.z > 65 && sphereArray[i].position.z < 80 && scene.getObjectByName('player').position.x == sphereArray[i].position.x){
       score += 100;
       if(sphereArray.length == 1){
