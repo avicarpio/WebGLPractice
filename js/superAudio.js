@@ -259,6 +259,7 @@ function render(){
 
     if(sphereArray[i].position.z > 100){
       score -= 400;
+      console.log(sphereArray.length);
       if(sphereArray.length == 1){
         var spawnPos = Math.floor(Math.random() * (1 - (-1)+ 1)) + -1;
         createSphere(spawnPos);
