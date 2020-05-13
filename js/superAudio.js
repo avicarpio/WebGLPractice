@@ -260,6 +260,7 @@ function render(){
         createSphere(spawnPos);
         counter = 0;
       }
+      scene.remove(sphereArray[i]);
       sphereArray.splice(i,1);
     }
 
@@ -271,6 +272,7 @@ function render(){
         createSphere(spawnPos);
         counter = 0;
       }
+      scene.remove(sphereArray[i]);
       sphereArray.splice(i,1);
     }
   }
