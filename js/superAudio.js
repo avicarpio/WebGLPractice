@@ -1,7 +1,17 @@
+import * as THREE from './three.module.js';
+import { DDSLoader } from './DDSLoader.js';
+import { MTLLoader } from './MTLLoader.js';
+import { OBJLoader } from './OBJLoader.js';
+
 var renderer;
 var scene;
 var camera;
 var positionPlayer = 0;
+var score = 0;
+var counter = 0;
+var sphereArray = [];
+var time2spawn = 45;
+var globalCounter = 0;
 
 function createRenderer(){
 
@@ -34,35 +44,13 @@ function loadSong(){
   var audioLoader = new THREE.AudioLoader();
 
   var sound1 = new THREE.PositionalAudio( listener );
-  audioLoader.load( 'audio/sandstorm.ogg', function ( buffer ) {
+  audioLoader.load( 'audio/DaftPunk.ogg', function ( buffer ) {
 
     sound1.setBuffer( buffer );
     sound1.setRefDistance( 100 );
     sound1.play();
 
   } );
-}
-
-function createBox(){
-  var boxGeometry = new THREE.BoxGeometry(6, 4, 6);
-  var boxMaterial = new THREE.MeshLambertMaterial({
-    color: "red"
-  });
-  var box = new THREE.Mesh(boxGeometry, boxMaterial);
-  box.castShadow = true;
-  scene.add(box);
-}
-
-function createPlane(){
-  var planeGeometry = new THREE.PlaneGeometry(20,20);
-  var planeMaterial = new THREE.MeshLambertMaterial({
-    color: 0xcccccc
-  });
-  var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.receiveShadow = true;
-  plane.rotation.x = -0.5 * Math.PI;
-  plane.position.y = -2;
-  scene.add(plane);
 }
 
 function createLight(){
@@ -81,12 +69,36 @@ function createAmbient(){
 
 }
 
+function createSphere(pos){
+
+  var sphereGeometry = new THREE.SphereGeometry(5, 30, 30);
+  var sphereMesh = new THREE.Mesh(sphereGeometry);
+  sphereMesh.name = 'point';
+  sphereArray.push(sphereMesh);
+  scene.add(sphereMesh);
+
+  switch(pos){
+    case -1:
+      sphereMesh.position.x = -20;
+      break;
+    case 0:
+      sphereMesh.position.x = 0;
+      break;
+    case 1:
+      sphereMesh.position.x = 20;
+      break;
+  }
+  sphereMesh.position.y = 10;
+  sphereMesh.position.z = -1300;
+
+}
+
 function loadObject1(){
 
   var material = new THREE.MeshPhongMaterial();
   //cargar texturas...
 
-  var loader = new THREE.OBJLoader();
+  var loader = new OBJLoader();
 
   loader.load('SuperAudioAssets/Carril.obj', function (object){
     object.traverse(function(child){
@@ -107,7 +119,7 @@ function loadObject2(){
     var material = new THREE.MeshPhongMaterial();
     //cargar texturas...
   
-    var loader = new THREE.OBJLoader();
+    var loader = new OBJLoader();
   
     loader.load('SuperAudioAssets/Carril.obj', function (object){
       object.traverse(function(child){
@@ -127,29 +139,52 @@ function loadObject2(){
 
   function loadPlayer(){
 
-    var material = new THREE.MeshPhongMaterial();
 
-    var loader = new THREE.OBJLoader();
-  
-    loader.load('SuperAudioAssets/spaceship.obj', function (object){
-      object.traverse(function(child){
-        if(child instanceof THREE.Mesh){
-          child.material = material;
-          child.receiveShadow = true;
-          child.castShadow = true;
-        }
-      });
-      object.name = "player";
-      scene.add(object);
-      scene.getObjectByName('player').position.z = 60;
-      scene.getObjectByName('player').position.y = 15;
-      scene.getObjectByName('player').rotation.y = 3.14;
-      scene.getObjectByName('player').scale.set(0.05,0.05,0.05);
-    });
+    var onProgress = function ( xhr ) {
+
+      if ( xhr.lengthComputable ) {
+
+        var percentComplete = xhr.loaded / xhr.total * 100;
+        console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+
+      }
+
+    };
+
+    var onError = function () { };
+
+    var manager = new THREE.LoadingManager();
+				manager.addHandler( /\.dds$/i, new DDSLoader() );
+
+				// comment in the following line and import TGALoader if your asset uses TGA textures
+				// manager.addHandler( /\.tga$/i, new TGALoader() );
+
+				new MTLLoader( manager )
+					.setPath( 'SuperAudioAssets/' )
+					.load( 'spaceship.mtl', function ( materials ) {
+
+						materials.preload();
+
+						new OBJLoader( manager )
+							.setMaterials( materials )
+							.setPath( 'SuperAudioAssets/' )
+							.load( 'spaceship.obj', function ( object ) {
+
+								object.name = "player";
+                scene.add(object);
+                scene.getObjectByName('player').position.z = 70;
+                scene.getObjectByName('player').position.y = 15;
+                scene.getObjectByName('player').rotation.y = 3.14;
+                scene.getObjectByName('player').scale.set(0.05,0.05,0.05);
+
+							}, onProgress, onError );
+
+					} );
   }
 //init() gets executed once
 function init(){
   scene = new THREE.Scene();
+  scene.background = new THREE.Color( 0x515151 );
   createRenderer();
   createCamera();
   createLight();
@@ -160,6 +195,8 @@ function init(){
   loadPlayer();
 
   loadSong();
+
+  createSphere(0);
 
   positionPlayer = 0;
   //add renderer to HTML DOM
@@ -176,15 +213,49 @@ function render(){
 
   if(scene.getObjectByName('carril1') != null){
     if(scene.getObjectByName('carril1').position.z == 0){
-      scene.getObjectByName('carril2').position.z = -1550;
+      if(scene.getObjectByName('carril2') != null){
+        scene.getObjectByName('carril2').position.z = -1550;
+      }
     }
     scene.getObjectByName('carril1').position.z += 5;
   }
   if(scene.getObjectByName('carril2') != null){
     if(scene.getObjectByName('carril2').position.z == 0){
-      scene.getObjectByName('carril1').position.z = -1550;
+      if(scene.getObjectByName('carril1') != null){
+        scene.getObjectByName('carril1').position.z = -1550;
+      }
     }
     scene.getObjectByName('carril2').position.z += 5;
+  }
+
+  counter++;
+  globalCounter++;
+
+  if(globalCounter == 1300){
+    time2spawn = time2spawn / 2;
+  }
+
+  if(globalCounter == 2500){
+    time2spawn = time2spawn / 2;
+  }
+
+  if(counter > time2spawn){
+    var spawnPos = Math.floor(Math.random() * (1 - (-1)+ 1)) + -1;
+    createSphere(spawnPos);
+    counter = 0;
+  }
+
+  for (var i = 0; i < sphereArray.length; i++){
+    sphereArray[i].position.z += 10;
+    if(sphereArray[i].position.z > 65 && sphereArray[i].position.z < 80 && scene.getObjectByName('player').position.x == sphereArray[i].position.x){
+      score += 100;
+      sphereArray.splice(i,1);
+    }
+
+    if(sphereArray[i].position.z > 100){
+      score -= 400;
+      sphereArray.splice(i,1);
+    }
   }
 
   if(moveLeft){
@@ -202,6 +273,10 @@ function render(){
     }
     moveRight = false;
   }
+
+  score++;
+
+  document.getElementById("score").textContent = "Score = " + score;
 
   //tell browser to execute function renderer
   //when its ready to repaint
