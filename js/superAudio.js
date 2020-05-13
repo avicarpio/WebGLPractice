@@ -244,8 +244,11 @@ function render(){
     createSphere(spawnPos);
     counter = 0;
   }
-
-  document.getElementById("points").textContent = "Points = " + sphereArray.length;
+  try {
+    document.getElementById("points").textContent = "Points = " + sphereArray.length;
+  } catch (error) {
+    
+  }
 
   for (var i = 0; i < sphereArray.length; i++){
     sphereArray[i].position.z += 10;
