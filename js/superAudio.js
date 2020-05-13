@@ -10,7 +10,7 @@ var positionPlayer = 0;
 var score = 0;
 var counter = 0;
 var sphereArray = [];
-var time2spawn = 90;
+var time2spawn = 180;
 var globalCounter = 0;
 
 function createRenderer(){
@@ -231,11 +231,11 @@ function render(){
   counter++;
   globalCounter++;
 
-  if(globalCounter == 1300){
+  if(globalCounter == 2600){
     time2spawn = time2spawn / 2;
   }
 
-  if(globalCounter == 2500){
+  if(globalCounter == 5000){
     time2spawn = time2spawn / 2;
   }
 
