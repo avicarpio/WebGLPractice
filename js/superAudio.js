@@ -12,6 +12,8 @@ var counter = 0;
 var sphereArray = [];
 var time2spawn = 180;
 var globalCounter = 0;
+var combo = 0;
+var maxCombo = 0;
 
 function createRenderer(){
 
@@ -245,11 +247,6 @@ function render(){
     createSphere(spawnPos);
     counter = 0;
   }
-  try {
-    document.getElementById("points").textContent = "Points = " + sphereArray.length;
-  } catch (error) {
-    
-  }
 
   for (var i = 0; i < sphereArray.length; i++){
     sphereArray[i].position.z += 10;
@@ -260,9 +257,18 @@ function render(){
         createSphere(spawnPos);
         counter = 0;
       }
+      combo++;
       scene.remove(sphereArray[i]);
       sphereArray.splice(i,1);
     }
+
+    if(combo > maxCombo){
+      maxCombo = combo;
+    }
+
+    document.getElementById("combo").textContent = "Combo = " +  combo;
+    document.getElementById("maxCombo").textContent = "Max Combo = " +  maxCombo;
+
 
     if(sphereArray[i].position.z > 100){
       score -= 400;
@@ -272,6 +278,7 @@ function render(){
         createSphere(spawnPos);
         counter = 0;
       }
+      combo = 0;
       scene.remove(sphereArray[i]);
       sphereArray.splice(i,1);
     }
