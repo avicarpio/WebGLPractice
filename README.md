@@ -10,3 +10,6 @@ Move: A & D.
 Test it!
 
 https://avicarpio.github.io/WebGLPractice/
+
+
+GitHub Repo: https://github.com/avicarpio/WebGLPractice
